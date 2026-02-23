@@ -2,12 +2,19 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const LoginPage: React.FC = () => {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -16,9 +23,21 @@ const LoginPage: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Login Data:", formData);
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await axios.post("/api/users/login", formData);
+      console.log("Login Success:", response.data);
+
+      router.push("/profile"); // redirect after login
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -29,6 +48,11 @@ const LoginPage: React.FC = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+
+          {error && (
+            <p className="text-red-500 text-sm text-center">{error}</p>
+          )}
+
           {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -40,6 +64,7 @@ const LoginPage: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
               required
+              disabled={loading}
               placeholder="Enter your email"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             />
@@ -56,6 +81,7 @@ const LoginPage: React.FC = () => {
               value={formData.password}
               onChange={handleChange}
               required
+              disabled={loading}
               placeholder="Enter your password"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             />
@@ -63,10 +89,7 @@ const LoginPage: React.FC = () => {
 
           {/* Forgot Password */}
           <div className="text-right">
-            <Link
-              href="#"
-              className="text-sm text-blue-600 hover:underline"
-            >
+            <Link href="#" className="text-sm text-blue-600 hover:underline">
               Forgot Password?
             </Link>
           </div>
@@ -74,9 +97,14 @@ const LoginPage: React.FC = () => {
           {/* Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200 font-medium"
+            disabled={loading}
+            className={`w-full py-2 rounded-lg transition duration-200 font-medium text-white ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 

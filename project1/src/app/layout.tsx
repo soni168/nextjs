@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { ReactNode } from "react";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Project1",

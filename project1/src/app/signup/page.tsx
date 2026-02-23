@@ -1,29 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import React,{useState} from "react";
-import {useRouter} from "next/navigation";
-//import {axios} from "axios";
-
-
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const [loading, setLoading] = useState(false); // ✅ loading state
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+  setFormData({
+    ...formData,
+    [e.target.name]: e.target.value,
+  });
+};
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
+    setLoading(true); // ✅ start loading
+
+    try {
+      await axios.post("/api/users/signup", formData);
+
+      toast.success("Account created successfully 🎉");
+
+      router.push("/login");
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.error || "Something went wrong"
+      );
+    } finally {
+      setLoading(false); // ✅ stop loading
+    }
   };
 
   return (
@@ -36,10 +51,11 @@ const SignupPage: React.FC = () => {
             <label className="block text-sm font-medium mb-1">Full Name</label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="username"
+              value={formData.username}
               onChange={handleChange}
               required
+              disabled={loading}  // ✅ disable while loading
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your name"
             />
@@ -53,6 +69,7 @@ const SignupPage: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
               required
+              disabled={loading}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your email"
             />
@@ -66,6 +83,7 @@ const SignupPage: React.FC = () => {
               value={formData.password}
               onChange={handleChange}
               required
+              disabled={loading}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your password"
             />
@@ -73,17 +91,25 @@ const SignupPage: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+            disabled={loading}
+            className={`w-full py-2 rounded-lg transition duration-200 ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
           >
-            Sign Up
+            {loading ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-600 mt-4">
           Already have an account?{" "}
-          <span className="text-blue-600 cursor-pointer hover:underline">
+          <Link
+            href="/login"
+            className="text-blue-600 cursor-pointer hover:underline"
+          >
             Login
-          </span>
+          </Link>
         </p>
       </div>
     </div>
