@@ -1,10 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { ReactNode } from "react";
-import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  title: "Project1",
+  title: "NEXTJS ",
   description: "My Next.js App",
 };
 
@@ -19,10 +18,10 @@ export default function RootLayout({
         {/* Navbar */}
         <header className="bg-white shadow-md">
           <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 className="text-xl font-bold">MyApp</h1>
+            <h1 className="text-xl font-bold">DOCs Platform</h1>
             <nav className="space-x-4">
               <a href="/" className="hover:text-blue-600">
-                Home
+                Profile
               </a>
               <a href="/login" className="hover:text-blue-600">
                 Login

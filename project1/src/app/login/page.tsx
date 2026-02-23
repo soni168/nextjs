@@ -7,20 +7,12 @@ import { useRouter } from "next/navigation";
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,10 +21,19 @@ const LoginPage: React.FC = () => {
     setError("");
 
     try {
-      const response = await axios.post("/api/users/login", formData);
+      const response = await axios.post("/api/users/login", formData, {
+        withCredentials: true, // important for httpOnly cookies
+      });
+
       console.log("Login Success:", response.data);
 
-      router.push("/profile"); // redirect after login
+      // Optional: store token in localStorage (less secure)
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      }
+
+      // Redirect to profile
+      router.push("/profile");
     } catch (err: any) {
       setError(err.response?.data?.error || "Login failed");
     } finally {
@@ -48,16 +49,11 @@ const LoginPage: React.FC = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
-          {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
               type="email"
               name="email"
@@ -72,9 +68,7 @@ const LoginPage: React.FC = () => {
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input
               type="password"
               name="password"
@@ -94,14 +88,12 @@ const LoginPage: React.FC = () => {
             </Link>
           </div>
 
-          {/* Button */}
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
             className={`w-full py-2 rounded-lg transition duration-200 font-medium text-white ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
+              loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
             {loading ? "Logging in..." : "Login"}
@@ -111,10 +103,7 @@ const LoginPage: React.FC = () => {
         {/* Signup Link */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Don’t have an account?{" "}
-          <Link
-            href="/signup"
-            className="text-blue-600 hover:underline font-medium"
-          >
+          <Link href="/signup" className="text-blue-600 hover:underline font-medium">
             Sign Up
           </Link>
         </p>
