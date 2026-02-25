@@ -16,14 +16,15 @@ export const sendEmail = async ({ email, userId, emailType }: any) => {
       forgotPasswordTokenExpiry: Date.now() + 3600000,
     });
 
+
     // Looking to send emails in production? Check out our Email API/SMTP product!
     var transport = nodemailer.createTransport({
       host: "sandbox.smtp.mailtrap.io",
       port: 2525,
-      auth: {
-        user: "11280737818456",
-        pass: "85b75f713f066c",
-      },
+    auth: {
+  user: process.env.MAILTRAP_USER,
+  pass: process.env.MAILTRAP_PASS,
+},
     });
 
     const mailOptions = {

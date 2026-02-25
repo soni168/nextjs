@@ -17,7 +17,7 @@ const [error,setError] = useState(false);
             setVerified(true);
         } catch (error:any) {
             setError(true);
-            console.log(error.reponse.data);
+            console.log(error.response?.data);
             
         }
 
@@ -33,7 +33,7 @@ const [error,setError] = useState(false);
             verifyUserEmail();
         }
     }, [token]);
-
+     console.log("Token being sent:", token);  
     return(
        <div className="flex flex-col items-center justify-center min-h-screen py-2">
  

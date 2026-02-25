@@ -2,8 +2,6 @@ import {connect} from "@/dbconfig/dbconfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
 
-
-
 connect()
 
 
@@ -21,11 +19,11 @@ export async function POST(request: NextRequest){
         }
         console.log(user);
 
-        user.isVerfied = true;
+        user.isVerified = true;
         user.verifyToken = undefined;
         user.verifyTokenExpiry = undefined;
         await user.save();
-        
+        console.log("Token received:", token);
         return NextResponse.json({
             message: "Email verified successfully",
             success: true
