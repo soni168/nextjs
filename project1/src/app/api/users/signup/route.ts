@@ -2,6 +2,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextResponse, NextRequest } from "next/server";
 import User from "@/models/userModel";
 import bcrypt from "bcryptjs";
+import { sendEmail } from "@/helpers/mailer"; 
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,8 +10,7 @@ export async function POST(request: NextRequest) {
 
     const reqBody = await request.json();
     const { username, email, password } = reqBody;
-   
-    // Check if user already exists
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
@@ -30,6 +30,13 @@ export async function POST(request: NextRequest) {
     });
 
     const savedUser = await newUser.save();
+
+    
+    await sendEmail({
+      email,
+      emailType: "VERIFY",
+      userId: savedUser._id,
+    });
 
     return NextResponse.json({
       message: "User created successfully",
