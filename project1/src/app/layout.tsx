@@ -18,9 +18,9 @@ export default function RootLayout({
         {/* Navbar */}
         <header className="bg-white shadow-md">
           <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 className="text-xl font-bold">DOCs Platform</h1>
+            <h1 className="text-xl font-bold">Fun app</h1>
             <nav className="space-x-4">
-              <a href="/" className="hover:text-blue-600">
+              <a href="/profile" className="hover:text-blue-600">
                 Profile
               </a>
               <a href="/login" className="hover:text-blue-600">
@@ -41,7 +41,7 @@ export default function RootLayout({
         {/* Footer */}
         <footer className="bg-white border-t mt-10">
           <div className="max-w-6xl mx-auto px-4 py-4 text-center text-sm text-gray-500">
-            © {new Date().getFullYear()} MyApp. All rights reserved.
+            © {new Date().getFullYear()} Docs app. All rights reserved.
           </div>
         </footer>
       </body>

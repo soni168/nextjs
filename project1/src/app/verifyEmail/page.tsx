@@ -1,60 +1,114 @@
 "use client";
 import axios from "axios";
 import Link from "next/link";
-import React,{useEffect,useState} from "react";
-
+import React, { useEffect, useState } from "react";
 
 export default function VerifyEmailPage() {
-    
-const [token,setToken]=useState("");
-const [verified,setVerified] = useState(false);
-const [error,setError] = useState(false);
+    const [token, setToken] = useState("");
+    const [verified, setVerified] = useState(false);
+    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-
-   const verifyUserEmail = async () => {
+    const verifyUserEmail = async () => {
         try {
-            await axios.post('/api/users/verifyemail', {token})
+            setLoading(true);
+            await axios.post('/api/users/verifyemail', { token });
             setVerified(true);
-        } catch (error:any) {
+            setError(false);
+        } catch (error: any) {
             setError(true);
             console.log(error.response?.data);
-            
+        } finally {
+            setLoading(false);
         }
+    };
 
-    }
     useEffect(() => {
-        const urlToken = window.location.search.split("=")[1];
+        // More robust way to get the token from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get("token");
         setToken(urlToken || "");
     }, []);
 
-
     useEffect(() => {
-        if(token.length > 0) {
+        if (token.length > 0) {
             verifyUserEmail();
         }
     }, [token]);
-     console.log("Token being sent:", token);  
-    return(
-       <div className="flex flex-col items-center justify-center min-h-screen py-2">
- 
-            <h1 className="text-4xl">Verify Email</h1>
-            <h2 className="p-2 bg-orange-500 text-black">{token ? `${token}` : "no token"}</h2>
 
-            {verified && (
-                <div>
-                    <h2 className="text-2xl">Email Verified</h2>
-                    <Link href="/login">
-                        Login
-                    </Link>
+    return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6 text-slate-900">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden text-center">
+                
+                {/* Visual Header */}
+                <div className={`p-10 ${error ? 'bg-red-50' : 'bg-blue-600'}`}>
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white shadow-sm mb-4">
+                        {loading ? (
+                            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        ) : verified ? (
+                            <span className="text-3xl">✅</span>
+                        ) : error ? (
+                            <span className="text-3xl">❌</span>
+                        ) : (
+                            <span className="text-3xl text-blue-600 font-bold">!</span>
+                        )}
+                    </div>
+                    <h1 className={`text-2xl font-bold ${error ? 'text-red-700' : 'text-white'}`}>
+                        {verified ? "Email Verified" : error ? "Verification Failed" : "Verifying Email"}
+                    </h1>
                 </div>
-            )}
-            {error && (
-                <div>
-                    <h2 className="text-2xl bg-red-500 text-black">Error</h2>
-                    
+
+                {/* Content */}
+                <div className="p-8">
+                    {!verified && !error && (
+                        <p className="text-slate-500">
+                            Please wait while we validate your account credentials...
+                        </p>
+                    )}
+
+                    {verified && (
+                        <div className="space-y-4">
+                            <p className="text-slate-600">
+                                Your account is now active. You can proceed to the login page.
+                            </p>
+                            <Link 
+                                href="/login"
+                                className="inline-block w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all shadow-md shadow-blue-100"
+                            >
+                                Go to Login
+                            </Link>
+                        </div>
+                    )}
+
+                    {error && (
+                        <div className="space-y-4">
+                            <p className="text-slate-600 bg-red-50 p-3 rounded-lg text-sm border border-red-100">
+                                The link may be expired or the token is invalid.
+                            </p>
+                            <Link 
+                                href="/signup"
+                                className="inline-block w-full py-3 px-4 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg transition-all"
+                            >
+                                Try Signing Up Again
+                            </Link>
+                        </div>
+                    )}
+
+                    {/* Token Debugger (Optional: Hidden in production usually) */}
+                    <div className="mt-8 pt-6 border-t border-slate-100">
+                        <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold block mb-2">
+                            Session Token
+                        </span>
+                        <code className="text-xs p-2 bg-slate-50 rounded border border-slate-100 text-blue-600 block truncate">
+                            {token ? token : "No token detected"}
+                        </code>
+                    </div>
                 </div>
-            )}
+            </div>
+            
+            <footer className="mt-8 text-slate-400 text-sm">
+                &copy; 2026 Your Project Identity
+            </footer>
         </div>
-
-        )
+    );
 }
