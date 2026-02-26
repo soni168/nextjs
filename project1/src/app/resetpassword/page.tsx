@@ -6,7 +6,12 @@ import { useRouter } from "next/navigation";
 
 export default function ResetPassword({ searchParams }: any) {
   const router = useRouter();
-  const token = searchParams?.token;
+
+  // safer token handling
+  const token =
+    typeof searchParams?.token === "string"
+      ? searchParams.token
+      : "";
 
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,7 +23,7 @@ export default function ResetPassword({ searchParams }: any) {
       return;
     }
 
-    if (!password) {
+    if (!password.trim()) {
       setError("Please enter a new password.");
       return;
     }
@@ -58,14 +63,14 @@ export default function ResetPassword({ searchParams }: any) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full px-4 py-2 mb-4 border rounded-lg"
-          disabled={loading || !token}
+          disabled={loading}  
         />
 
         <button
           onClick={resetPassword}
-          disabled={loading || !token}
+          disabled={loading}  
           className={`w-full py-2 rounded-lg font-medium text-white ${
-            loading || !token
+            loading
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-blue-600 hover:bg-blue-700"
           }`}
