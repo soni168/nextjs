@@ -12,8 +12,10 @@ export async function POST(request: NextRequest) {
   console.log("Token from URL:", token);
 const user = await User.findOne({
   forgotPasswordToken: token,
-  forgotPasswordTokenExpiry: { $gt: Date.now() }
+  forgotPasswordTokenExpiry: { $gt: new Date() }
 });
+console.log("Expiry in DB:", user?.forgotPasswordTokenExpiry);
+console.log("Current Time:", new Date());
 console.log("User found:", user);
 
     if (!user) {
