@@ -56,7 +56,7 @@ export default function ProfilePage() {
                         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                             Account Identifier
                         </label>
-                        <div className="flex items-center justify-center p-4 bg-slate-50 border border-slate-100 rounded-xl min-h-[60px]">
+                        <div className="flex items-center justify-center p-4 bg-slate-50 border border-slate-100 rounded-xl min-h-15">
                             {data === 'nothing' ? (
                                 <span className="text-slate-400 italic">No record found</span>
                             ) : (
