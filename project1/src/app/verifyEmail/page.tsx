@@ -1,18 +1,20 @@
 "use client";
 import axios from "axios";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
-export default function VerifyEmailPage() {
+function VerifyEmailPage() {
+    const searchParams = useSearchParams();
     const [token, setToken] = useState("");
     const [verified, setVerified] = useState(false);
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const verifyUserEmail = async () => {
+    const verifyUserEmail = useCallback(async (tok: string) => {
         try {
             setLoading(true);
-            await axios.post('/api/users/verifyemail', { token });
+            await axios.post('/api/users/verifyemail', { token: tok });
             setVerified(true);
             setError(false);
         } catch (error: any) {
@@ -21,20 +23,18 @@ export default function VerifyEmailPage() {
         } finally {
             setLoading(false);
         }
-    };
-
-    useEffect(() => {
-        // More robust way to get the token from the URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlToken = urlParams.get("token");
-        setToken(urlToken || "");
     }, []);
 
     useEffect(() => {
+        const urlToken = searchParams.get("token");
+        setToken(urlToken || "");
+    }, [searchParams]);
+
+    useEffect(() => {
         if (token.length > 0) {
-            verifyUserEmail();
+            verifyUserEmail(token);
         }
-    }, [token]);
+    }, [token, verifyUserEmail]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6 text-slate-900">
@@ -94,7 +94,6 @@ export default function VerifyEmailPage() {
                         </div>
                     )}
 
-                    {/* Token Debugger (Optional: Hidden in production usually) */}
                     <div className="mt-8 pt-6 border-t border-slate-100">
                         <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold block mb-2">
                             Session Token
@@ -110,5 +109,17 @@ export default function VerifyEmailPage() {
                 &copy; 2026 Your Project Identity
             </footer>
         </div>
+    );
+}
+
+export default function VerifyEmailPageWrapper() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }>
+            <VerifyEmailPage />
+        </Suspense>
     );
 }

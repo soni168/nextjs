@@ -1,9 +1,10 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { ReactNode } from "react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "NEXTJS ",
+  title: "NEXTJS",
   description: "My Next.js App",
 };
 
@@ -20,15 +21,15 @@ export default function RootLayout({
           <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 className="text-xl font-bold">Fun app</h1>
             <nav className="space-x-4">
-              <a href="/profile" className="hover:text-blue-600">
+              <Link href="/profile" className="hover:text-blue-600">
                 Profile
-              </a>
-              <a href="/login" className="hover:text-blue-600">
+              </Link>
+              <Link href="/login" className="hover:text-blue-600">
                 Login
-              </a>
-              <a href="/signup" className="hover:text-blue-600">
+              </Link>
+              <Link href="/signup" className="hover:text-blue-600">
                 Signup
-              </a>
+              </Link>
             </nav>
           </div>
         </header>

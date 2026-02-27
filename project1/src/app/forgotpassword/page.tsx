@@ -2,7 +2,7 @@
 import axios from "axios";
 import { useState } from "react";
 import Link from "next/link";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -26,6 +26,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6 text-slate-900">
+      <Toaster position="top-center" />
       <div className="bg-white p-10 rounded-2xl shadow-sm border border-slate-200 w-full max-w-md">
         
         {/* Header Section */}
