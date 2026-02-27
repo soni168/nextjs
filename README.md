@@ -41,6 +41,8 @@ app/
 │ ├── login
 │ ├── resetpassword
 │ └── verifyemail
+| |__forgotpassword
+|__forgotpassword/
 ├── login/
 ├── signup/
 ├── resetpassword/
@@ -52,7 +54,9 @@ lib/
 models/
 └── userModel.ts
 
-
+helper/
+| |___gataUserData
+|  |___ mailer
 ---
 
 ## ⚙️ Installation
@@ -60,7 +64,7 @@ models/
 Clone the repository:
 
 
-git clone https://github.com/your-username/your-repo-name.git
+git clone https://github.com/soni168/nextjs.git
 
 cd your-repo-name
 
@@ -123,6 +127,6 @@ This project is optimized for deployment on Vercel.
 
 ---
 
-## 👩‍💻 Author
+by:
 
 Soni Chaudhary  
