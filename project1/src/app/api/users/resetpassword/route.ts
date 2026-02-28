@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { connect } from "@/dbconfig/dbconfig";
 
 export async function POST(request: NextRequest) {
@@ -16,15 +17,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (password.length < 6) {
+    // ✅ stronger minimum length
+    if (password.length < 8) {
       return NextResponse.json(
-        { error: "Password must be at least 6 characters" },
+        { error: "Password must be at least 8 characters" },
         { status: 400 }
       );
     }
 
+    // ✅ hash the incoming token before DB lookup (matches hashed value at rest)
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
     const user = await User.findOne({
-      forgotPasswordToken: token,
+      forgotPasswordToken: hashedToken,
       forgotPasswordTokenExpiry: { $gt: Date.now() },
     });
 
@@ -35,12 +43,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // ✅ pass rounds directly — no need to manually genSalt
+    user.password = await bcrypt.hash(password, 12);
 
-    user.password = hashedPassword;
-    user.forgotPasswordToken = undefined;
-    user.forgotPasswordTokenExpiry = undefined;
+    // ✅ use null instead of undefined to reliably clear Mongoose fields
+    user.forgotPasswordToken = null;
+    user.forgotPasswordTokenExpiry = null;
 
     await user.save();
 
