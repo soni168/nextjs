@@ -1,13 +1,45 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
-import crypto from "crypto";
+import { NextRequest, NextResponse } from "next/server";
+import { sendEmail } from "@/helpers/mailer";
+
+connect();
 
 export async function POST(request: NextRequest) {
   try {
-    await connect();
+    const reqBody = await request.json();
+    const { token, resend } = reqBody;
 
-    const { token } = await request.json();
+    console.log("verifyemail body:", reqBody);
+
+    if (resend) {
+  const user = await User.findOne({ email: resend });
+
+  if (!user) {
+    return NextResponse.json(
+      { message: "User not found" },
+      { status: 400 }
+    );
+  }
+
+  if (user.isVerified) {
+    return NextResponse.json({
+      message: "Email already verified",
+    });
+  }
+
+  await sendEmail({
+    email: user.email,
+    emailType: "VERIFY",
+    userId: user._id,
+  });
+
+  return NextResponse.json({
+    message: "Verification link sent",
+    success: true,
+  });
+}
+
 
     if (!token) {
       return NextResponse.json(
@@ -16,14 +48,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ hash the incoming token before DB lookup
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
-
     const user = await User.findOne({
-      verifyToken: hashedToken,
+      verifyToken: token,
       verifyTokenExpiry: { $gt: Date.now() },
     });
 
@@ -34,24 +60,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ skip if already verified
-    if (user.isVerified) {
-      return NextResponse.json(
-        { message: "Email is already verified", success: true }
-      );
-    }
-
     user.isVerified = true;
-    user.verifyToken = null;         // ✅ null reliably clears Mongoose fields
-    user.verifyTokenExpiry = null;   // ✅ same here
+    user.verifyToken = undefined;
+    user.verifyTokenExpiry = undefined;
     await user.save();
 
     return NextResponse.json({
       message: "Email verified successfully",
       success: true,
     });
-
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Verify email error:", error);
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    );
   }
 }
