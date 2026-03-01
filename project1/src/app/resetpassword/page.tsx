@@ -53,15 +53,17 @@ function ResetPasswordForm() {
   // ── Invalid / missing token ────────────────────────────────────────────
   if (tokenValid === false) {
     return (
-      <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-10 max-w-md w-full text-center">
-        <div className="text-4xl mb-4">⚠️</div>
-        <h2 className="text-xl font-semibold mb-2">Invalid Reset Link</h2>
-        <p className="text-gray-400 text-sm mb-6">
+      <div className="bg-white border border-slate-200 rounded-2xl p-10 max-w-md w-full text-center shadow-sm">
+        <div className="inline-flex items-center justify-center w-14 h-14 bg-red-50 rounded-2xl mb-4">
+          <span className="text-3xl">⚠️</span>
+        </div>
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Invalid Reset Link</h2>
+        <p className="text-slate-500 text-sm mb-6">
           This password reset link is missing or malformed. Please request a new one.
         </p>
         <button
           onClick={() => router.replace("/forgotpassword")}
-          className="px-6 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition"
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-md shadow-blue-100"
         >
           Request New Link
         </button>
@@ -72,71 +74,101 @@ function ResetPasswordForm() {
   // ── Success state ──────────────────────────────────────────────────────
   if (success) {
     return (
-      <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-10 max-w-md w-full text-center">
-        <div className="text-4xl mb-4">✅</div>
-        <h2 className="text-xl font-semibold mb-2">Password Reset!</h2>
-        <p className="text-gray-400 text-sm">
-          Your password has been updated. Redirecting you to login...
-        </p>
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden max-w-md w-full shadow-sm text-center">
+        <div className="bg-blue-600 p-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full mb-4">
+            <span className="text-3xl">✅</span>
+          </div>
+          <h2 className="text-2xl font-bold text-white">Password Reset!</h2>
+        </div>
+        <div className="p-8">
+          <p className="text-slate-500 text-sm">
+            Your password has been updated. Redirecting you to login...
+          </p>
+        </div>
       </div>
     );
   }
 
   // ── Main form ──────────────────────────────────────────────────────────
   return (
-    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-10 max-w-md w-full">
-      <div className="mb-8 text-center">
-        <h1 className="text-2xl font-semibold mb-1">Reset your password</h1>
-        <p className="text-gray-400 text-sm">
-          Enter a new password for your account.
-        </p>
-      </div>
-
-      {error && (
-        <div className="mb-5 px-4 py-3 bg-red-900/30 border border-red-700 text-red-400 rounded-lg text-sm">
-          {error}
+    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden max-w-md w-full shadow-sm">
+      {/* Header */}
+      <div className="bg-blue-600 p-8 text-center">
+        <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-500 rounded-2xl mb-4 border-4 border-blue-400/30">
+          <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+          </svg>
         </div>
-      )}
-
-      <div className="mb-4">
-        <label className="block text-sm text-gray-400 mb-1">New Password</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Min. 8 characters"
-          className="w-full px-4 py-2 bg-black border border-gray-700 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 transition"
-        />
+        <h1 className="text-2xl font-bold text-white">Reset Password</h1>
+        <p className="text-blue-100 text-sm mt-1">Enter a new password for your account</p>
       </div>
 
-      <div className="mb-6">
-        <label className="block text-sm text-gray-400 mb-1">Confirm Password</label>
-        <input
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Repeat your password"
-          className="w-full px-4 py-2 bg-black border border-gray-700 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 transition"
-        />
-      </div>
+      {/* Form */}
+      <div className="p-8 space-y-5">
+        {error && (
+          <div className="px-4 py-3 bg-red-50 border border-red-100 text-red-500 rounded-xl text-sm">
+            {error}
+          </div>
+        )}
 
-      <button
-        onClick={handleReset}
-        disabled={loading}
-        className="w-full py-2.5 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {loading ? "Resetting..." : "Reset Password"}
-      </button>
+        <div className="space-y-1">
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">
+            New Password
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Min. 8 characters"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+          />
+        </div>
 
-      <p className="mt-5 text-center text-sm text-gray-500">
-        Remembered it?{" "}
-        <span
-          onClick={() => router.replace("/login")}
-          className="text-blue-400 cursor-pointer hover:underline"
+        <div className="space-y-1">
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Repeat your password"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all"
+          />
+        </div>
+
+        <button
+          onClick={handleReset}
+          disabled={loading}
+          className={`w-full py-4 rounded-xl font-bold transition-all shadow-md active:scale-[0.98] flex items-center justify-center gap-2 ${
+            loading
+              ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
+              : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-100"
+          }`}
         >
-          Back to Login
-        </span>
-      </p>
+          {loading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+              Resetting...
+            </>
+          ) : (
+            "Reset Password"
+          )}
+        </button>
+
+        <div className="pt-4 border-t border-slate-100 text-center">
+          <p className="text-sm text-slate-600">
+            Remembered it?{" "}
+            <span
+              onClick={() => router.replace("/login")}
+              className="text-blue-600 font-bold cursor-pointer hover:text-blue-800 transition-colors"
+            >
+              Back to Login
+            </span>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -144,8 +176,8 @@ function ResetPasswordForm() {
 // ── Fallback shown while searchParams resolves ───────────────────────────────
 function ResetPasswordFallback() {
   return (
-    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-10 max-w-md w-full text-center">
-      <div className="text-gray-400 text-sm animate-pulse">Loading...</div>
+    <div className="bg-white border border-slate-200 rounded-2xl p-10 max-w-md w-full text-center shadow-sm">
+      <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
     </div>
   );
 }
@@ -153,7 +185,7 @@ function ResetPasswordFallback() {
 // ── Page export wraps inner component in Suspense ────────────────────────────
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-6">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex items-center justify-center px-6">
       <Suspense fallback={<ResetPasswordFallback />}>
         <ResetPasswordForm />
       </Suspense>

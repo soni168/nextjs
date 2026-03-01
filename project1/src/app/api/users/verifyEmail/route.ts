@@ -2,45 +2,45 @@ import { connect } from "@/dbconfig/dbconfig";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/helpers/mailer";
-
-connect();
+import crypto from "crypto";
 
 export async function POST(request: NextRequest) {
   try {
+    await connect(); // ✅ await added
+
     const reqBody = await request.json();
     const { token, resend } = reqBody;
 
-    console.log("verifyemail body:", reqBody);
-
+    // ── Resend verification email ──────────────────────────────────────
     if (resend) {
-  const user = await User.findOne({ email: resend });
+      const user = await User.findOne({ email: resend });
 
-  if (!user) {
-    return NextResponse.json(
-      { message: "User not found" },
-      { status: 400 }
-    );
-  }
+      if (!user) {
+        // ✅ generic message — email enumeration se bachao
+        return NextResponse.json({
+          message: "If email exists, verification link sent",
+        });
+      }
 
-  if (user.isVerified) {
-    return NextResponse.json({
-      message: "Email already verified",
-    });
-  }
+      if (user.isVerified) {
+        return NextResponse.json({
+          message: "Email already verified",
+        });
+      }
 
-  await sendEmail({
-    email: user.email,
-    emailType: "VERIFY",
-    userId: user._id,
-  });
+      await sendEmail({
+        email: user.email,
+        emailType: "VERIFY",
+        userId: user._id,
+      });
 
-  return NextResponse.json({
-    message: "Verification link sent",
-    success: true,
-  });
-}
+      return NextResponse.json({
+        message: "Verification link sent",
+        success: true,
+      });
+    }
 
-
+    // ── Verify token ───────────────────────────────────────────────────
     if (!token) {
       return NextResponse.json(
         { error: "Token is required" },
@@ -48,8 +48,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ✅ Hash incoming raw token before DB lookup
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
     const user = await User.findOne({
-      verifyToken: token,
+      verifyToken: hashedToken, // ✅ hashed token se match
       verifyTokenExpiry: { $gt: Date.now() },
     });
 
@@ -61,18 +67,19 @@ export async function POST(request: NextRequest) {
     }
 
     user.isVerified = true;
-    user.verifyToken = undefined;
-    user.verifyTokenExpiry = undefined;
+    user.verifyToken = null;          
+    user.verifyTokenExpiry = null;    
     await user.save();
 
     return NextResponse.json({
       message: "Email verified successfully",
       success: true,
     });
+
   } catch (error: any) {
     console.error("Verify email error:", error);
     return NextResponse.json(
-      { error: error.message },
+      { error: "Internal server error" }, // ✅ error.message expose nahi
       { status: 500 }
     );
   }
