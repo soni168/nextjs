@@ -106,7 +106,7 @@ function VerifyEmailPage() {
             </div>
             
             <footer className="mt-8 text-slate-400 text-sm">
-                &copy; 2026 Your Project Identity
+                &copy; 2026 Soni Chaudhary
             </footer>
         </div>
     );

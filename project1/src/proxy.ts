@@ -36,6 +36,5 @@ export const config = {
     '/verifyemail',
     '/forgotpassword',
     '/resetpassword',
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
